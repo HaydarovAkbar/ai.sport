@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /d/sport/ai.sport log --oneline -10)",
+      "Bash(pip install:*)"
+    ],
+    "additionalDirectories": [
+      "d:\\sport\\ai.sport\\app\\{api\\{v1,web},core,models,schemas,services,templates\\{auth,chat,admin},static"
+    ]
+  }
+}

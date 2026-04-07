@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Natijalar — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2>Admin Panel</h2>
+    <nav>
+      <a href="/admin">📊 Dashboard</a>
+      <a href="/admin/athletes">🏃 Sportchilar</a>
+      <a href="/admin/coaches">👨‍🏫 Trenerlar</a>
+      <a href="/admin/competitions">🏆 Musobaqalar</a>
+      <a href="/admin/results" class="active">📋 Natijalar</a>
+      <a href="/admin/users">👤 Foydalanuvchilar</a>
+    </nav>
+  </aside>
+
+  <div class="admin-content">
+    <div class="section-header">
+      <h1>Natijalar</h1>
+      <button class="btn-primary" onclick="openModal('addModal')">+ Qo'shish</button>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr><th>ID</th><th>Sportchi</th><th>Musobaqa</th><th>O'rin</th><th>Ball</th><th>Yil</th><th>Amallar</th></tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>{{ r.id }}</td>
+          <td>{{ r.athlete.full_name if r.athlete else r.athlete_id }}</td>
+          <td>{{ r.competition.name if r.competition else r.competition_id }}</td>
+          <td>{{ r.place or '-' }}</td>
+          <td>{{ r.score or '-' }}</td>
+          <td>{{ r.year }}</td>
+          <td><button class="btn-sm btn-danger" onclick="deleteResult({{ r.id }})">O'chirish</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="addModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Natija qo'shish</h3>
+    <form id="addResultForm">
+      <input name="athlete_id" type="number" placeholder="Sportchi ID *" required/>
+      <input name="competition_id" type="number" placeholder="Musobaqa ID *" required/>
+      <input name="place" type="number" placeholder="O'rin (1, 2, 3...)"/>
+      <input name="score" type="number" step="0.01" placeholder="Ball"/>
+      <input name="year" type="number" placeholder="Yil *" required/>
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary">Saqlash</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('addModal')">Bekor</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>const ACCESS_TOKEN = "{{ access_token }}";</script>
+<script src="/static/js/admin.js"></script>
+{% endblock %}

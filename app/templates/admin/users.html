@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Foydalanuvchilar — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2>Admin Panel</h2>
+    <nav>
+      <a href="/admin">📊 Dashboard</a>
+      <a href="/admin/athletes">🏃 Sportchilar</a>
+      <a href="/admin/coaches">👨‍🏫 Trenerlar</a>
+      <a href="/admin/competitions">🏆 Musobaqalar</a>
+      <a href="/admin/results">📋 Natijalar</a>
+      <a href="/admin/users" class="active">👤 Foydalanuvchilar</a>
+    </nav>
+  </aside>
+
+  <div class="admin-content">
+    <div class="section-header">
+      <h1>Foydalanuvchilar</h1>
+      <button class="btn-primary" onclick="openModal('addModal')">+ Qo'shish</button>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr><th>ID</th><th>Username</th><th>Email</th><th>Rol</th><th>Faol</th><th>Kirgan</th></tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td>
+          <td>{{ u.username }}</td>
+          <td>{{ u.email }}</td>
+          <td><span class="badge {{ u.role }}">{{ u.role }}</span></td>
+          <td>{{ '✅' if u.is_active else '❌' }}</td>
+          <td>{{ u.last_login or '-' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="addModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Foydalanuvchi qo'shish</h3>
+    <form id="addUserForm">
+      <input name="username" placeholder="Username *" required/>
+      <input name="email" type="email" placeholder="Email *" required/>
+      <input name="password" type="password" placeholder="Parol *" required/>
+      <select name="role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary">Saqlash</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('addModal')">Bekor</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>const ACCESS_TOKEN = "{{ access_token }}";</script>
+<script src="/static/js/admin.js"></script>
+{% endblock %}

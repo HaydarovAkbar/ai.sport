@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Sport Analytics AI{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/main.css"/>
+  {% block head %}{% endblock %}
+</head>
+<body>
+{% if user %}
+<nav class="navbar">
+  <div class="nav-brand">⚽ Sport AI</div>
+  <div class="nav-links">
+    <a href="/chat" class="{% if active=='chat' %}active{% endif %}">Chat</a>
+    {% if user.role == 'admin' %}
+    <a href="/admin" class="{% if active=='admin' %}active{% endif %}">Admin</a>
+    {% endif %}
+    <span class="nav-user">{{ user.username }}</span>
+    <a href="/logout" class="btn-logout">Chiqish</a>
+  </div>
+</nav>
+{% endif %}
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

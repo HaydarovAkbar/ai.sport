@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Chat — Sport AI{% endblock %}
+
+{% block content %}
+<div class="chat-layout">
+  <!-- Sidebar: session list -->
+  <aside class="chat-sidebar">
+    <div class="sidebar-header">
+      <span>Suhbatlar</span>
+      <button id="newChatBtn" class="btn-new-chat" title="Yangi suhbat">+</button>
+    </div>
+    <ul id="sessionList" class="session-list">
+      {% for s in sessions %}
+      <li class="session-item {% if s.id == session_id %}active{% endif %}"
+          data-id="{{ s.id }}">
+        {{ s.title or 'Yangi suhbat' }}
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- Main chat area -->
+  <section class="chat-main">
+    <div id="messages" class="messages">
+      {% if not session_id %}
+      <div class="welcome-msg">
+        <h2>Salom, {{ user.username }}!</h2>
+        <p>Sport haqida savol bering. Masalan:</p>
+        <ul>
+          <li>👉 "Toshkent viloyatidagi bokschilar kimlar?"</li>
+          <li>👉 "2023-yildagi eng yaxshi natijalar"</li>
+          <li>👉 "Sardor Rahimov qaysi hududdan?"</li>
+        </ul>
+      </div>
+      {% endif %}
+      {% for msg in messages %}
+      <div class="message {{ msg.role }}">
+        <div class="message-content">{{ msg.content }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <form id="chatForm" class="chat-input-area">
+      <textarea id="messageInput" class="chat-input" rows="1"
+                placeholder="Savolingizni yozing..." required></textarea>
+      <button type="submit" id="sendBtn" class="btn-send">&#9658;</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const ACCESS_TOKEN = "{{ access_token }}";
+  let currentSessionId = "{{ session_id or '' }}";
+</script>
+<script src="/static/js/chat.js"></script>
+{% endblock %}

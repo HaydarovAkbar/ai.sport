@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel — Sport AI{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2>Admin Panel</h2>
+    <nav>
+      <a href="/admin" class="{% if active_tab=='dashboard' %}active{% endif %}">📊 Dashboard</a>
+      <a href="/admin/athletes" class="{% if active_tab=='athletes' %}active{% endif %}">🏃 Sportchilar</a>
+      <a href="/admin/coaches" class="{% if active_tab=='coaches' %}active{% endif %}">👨‍🏫 Trenerlar</a>
+      <a href="/admin/competitions" class="{% if active_tab=='competitions' %}active{% endif %}">🏆 Musobaqalar</a>
+      <a href="/admin/results" class="{% if active_tab=='results' %}active{% endif %}">📋 Natijalar</a>
+      <a href="/admin/users" class="{% if active_tab=='users' %}active{% endif %}">👤 Foydalanuvchilar</a>
+    </nav>
+  </aside>
+
+  <div class="admin-content">
+    <h1>Dashboard</h1>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.counts.athletes }}</div>
+        <div class="stat-label">Sportchilar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.counts.coaches }}</div>
+        <div class="stat-label">Trenerlar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.counts.competitions }}</div>
+        <div class="stat-label">Musobaqalar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.counts.results }}</div>
+        <div class="stat-label">Natijalar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.counts.users }}</div>
+        <div class="stat-label">Foydalanuvchilar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.counts.faiss_docs }}</div>
+        <div class="stat-label">FAISS hujjatlar</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2>So'nggi harakatlar</h2>
+      <form method="post" action="/admin/index/rebuild" style="display:inline">
+        <button type="submit" class="btn-secondary">🔄 Indeksni yangilash</button>
+      </form>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Vaqt</th><th>Harakat</th><th>Foydalanuvchi</th><th>IP</th></tr>
+      </thead>
+      <tbody>
+        {% for log in stats.recent_logs %}
+        <tr>
+          <td>{{ log.created_at }}</td>
+          <td>{{ log.action }}</td>
+          <td>{{ log.user_id or '-' }}</td>
+          <td>{{ log.ip_address or '-' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

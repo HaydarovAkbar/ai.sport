@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Sportchilar — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2>Admin Panel</h2>
+    <nav>
+      <a href="/admin">📊 Dashboard</a>
+      <a href="/admin/athletes" class="active">🏃 Sportchilar</a>
+      <a href="/admin/coaches">👨‍🏫 Trenerlar</a>
+      <a href="/admin/competitions">🏆 Musobaqalar</a>
+      <a href="/admin/results">📋 Natijalar</a>
+      <a href="/admin/users">👤 Foydalanuvchilar</a>
+    </nav>
+  </aside>
+
+  <div class="admin-content">
+    <div class="section-header">
+      <h1>Sportchilar</h1>
+      <button class="btn-primary" onclick="openModal('addModal')">+ Qo'shish</button>
+    </div>
+
+    <div class="filters">
+      <form method="get">
+        <input name="sport_type" value="{{ filters.sport_type or '' }}" placeholder="Sport turi"/>
+        <input name="region" value="{{ filters.region or '' }}" placeholder="Viloyat"/>
+        <button type="submit" class="btn-secondary">Filtrlash</button>
+      </form>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Ism</th><th>Viloyat</th><th>Sport turi</th>
+          <th>Daraja</th><th>Trener</th><th>Amallar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in athletes %}
+        <tr>
+          <td>{{ a.id }}</td>
+          <td>{{ a.full_name }}</td>
+          <td>{{ a.region }}</td>
+          <td>{{ a.sport_type }}</td>
+          <td>{{ a.rank or '-' }}</td>
+          <td>{{ a.coach.full_name if a.coach else '-' }}</td>
+          <td>
+            <button class="btn-sm btn-danger" onclick="deleteAthlete({{ a.id }})">O'chirish</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      {% if page > 1 %}
+      <a href="?page={{ page-1 }}&sport_type={{ filters.sport_type or '' }}&region={{ filters.region or '' }}">&laquo;</a>
+      {% endif %}
+      <span>{{ page }} / {{ pages }}</span>
+      {% if page < pages %}
+      <a href="?page={{ page+1 }}&sport_type={{ filters.sport_type or '' }}&region={{ filters.region or '' }}">&raquo;</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div id="addModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Sportchi qo'shish</h3>
+    <form id="addAthleteForm">
+      <input name="full_name" placeholder="To'liq ism *" required/>
+      <input name="birth_date" type="date" placeholder="Tug'ilgan sana *" required/>
+      <input name="region" placeholder="Viloyat *" required/>
+      <input name="sport_type" placeholder="Sport turi *" required/>
+      <input name="rank" placeholder="Daraja (ixtiyoriy)"/>
+      <input name="coach_id" type="number" placeholder="Trener ID (ixtiyoriy)"/>
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary">Saqlash</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('addModal')">Bekor</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const ACCESS_TOKEN = "{{ access_token }}";
+</script>
+<script src="/static/js/admin.js"></script>
+{% endblock %}
