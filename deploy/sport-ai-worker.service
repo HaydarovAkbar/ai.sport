@@ -1,0 +1,26 @@
+# /etc/systemd/system/sport-ai-worker.service
+# Sport Analytics AI — ARQ background job worker
+
+[Unit]
+Description=Sport Analytics AI — ARQ Worker
+After=network.target postgresql.service redis.service
+Wants=redis.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/var/www/auth/aichat
+
+EnvironmentFile=/var/www/auth/aichat/.env
+Environment="PATH=/var/www/auth/aichat/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+
+ExecStart=/var/www/auth/aichat/.venv/bin/arq app.workers.chat_worker.WorkerSettings
+
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

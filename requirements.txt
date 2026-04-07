@@ -24,6 +24,10 @@ bcrypt==4.2.1
 # Rate Limiting
 slowapi==0.1.9
 
+# Job Queue
+arq==0.26.1
+redis[hiredis]==5.2.1
+
 # AI / Embeddings
 openai==1.57.0
 faiss-cpu==1.9.0

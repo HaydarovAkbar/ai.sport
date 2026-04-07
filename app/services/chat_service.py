@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import NotFoundException, ForbiddenException
 from app.models.audit_log import AuditLog
 from app.models.chat import ChatMessage, ChatSession
-from app.schemas.chat import ChatResponse, MessageRead, SessionRead
+from app.schemas.chat import ChatResponse, JobStatusResponse, MessageRead, SessionRead
 from app.schemas.common import PaginatedResponse
 from app.services.rag_service import RAGService
 
@@ -81,6 +81,29 @@ class ChatService:
             answer=rag_result.answer,
             tokens_used=rag_result.tokens_used,
         )
+
+    async def prepare_job(
+        self,
+        db: AsyncSession,
+        user_id: int,
+        message: str,
+        session_id: Optional[str],
+        ip: Optional[str] = None,
+    ) -> tuple[str, int]:
+        """
+        Save user message to DB, return (session_id, user_msg_id).
+        Called BEFORE enqueueing the ARQ job so the session always exists.
+        """
+        session = await self._get_or_create_session(db, user_id, session_id)
+
+        user_msg = ChatMessage(session_id=session.id, role="user", content=message)
+        db.add(user_msg)
+
+        if not session.title:
+            session.title = message[:80]
+
+        await db.flush()
+        return session.id, user_msg.id
 
     async def _get_or_create_session(
         self, db: AsyncSession, user_id: int, session_id: Optional[str]

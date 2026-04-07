@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from arq import create_pool
+from arq.connections import RedisSettings
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from openai import AsyncOpenAI
 from slowapi import _rate_limit_exceeded_handler
@@ -22,6 +24,7 @@ from app.services.rag_service import RAGService
 async def lifespan(app: FastAPI):
     setup_logging()
 
+    # ── OpenAI + services (used by web requests for non-job ops) ──
     openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
     embedding_service = EmbeddingService(openai_client)
@@ -35,9 +38,21 @@ async def lifespan(app: FastAPI):
     app.state.rag_service = rag_service
     app.state.chat_service = chat_service
 
+    # ── ARQ Redis pool ─────────────────────────────────────────────
+    arq_pool = await create_pool(
+        RedisSettings(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            database=settings.REDIS_DB,
+            password=settings.REDIS_PASSWORD or None,
+        )
+    )
+    app.state.arq_pool = arq_pool
+
     yield
 
-    # Shutdown (nothing to clean for FAISS — already saved to disk)
+    # ── Shutdown ───────────────────────────────────────────────────
+    await arq_pool.aclose()
 
 
 app = FastAPI(

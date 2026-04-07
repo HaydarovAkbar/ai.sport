@@ -16,6 +16,26 @@ class ChatResponse(BaseModel):
     tokens_used: Optional[int] = None
 
 
+# ── Job-based chat schemas ─────────────────────────────────────────────
+
+class JobSubmittedResponse(BaseModel):
+    """Returned immediately when message is enqueued (HTTP 202)."""
+    job_id: str
+    session_id: str
+    status: str = "queued"
+
+
+class JobStatusResponse(BaseModel):
+    """Returned when polling job status."""
+    job_id: str
+    status: str          # queued | in_progress | complete | failed | not_found
+    session_id: Optional[str] = None
+    message_id: Optional[int] = None
+    answer: Optional[str] = None
+    tokens_used: Optional[int] = None
+    error: Optional[str] = None
+
+
 class MessageRead(BaseModel):
     model_config = {"from_attributes": True}
 

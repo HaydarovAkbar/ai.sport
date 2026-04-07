@@ -46,12 +46,21 @@ class Settings(BaseSettings):
     FAISS_INDEX_DIR: str = "data/faiss"
     FAISS_TOP_K: int = 5
 
+    # Redis / ARQ job queue
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    REDIS_PASSWORD: str = ""
+
     # Rate Limiting
     RATE_LIMIT_CHAT: str = "20/minute"
     RATE_LIMIT_LOGIN: str = "5/minute"
 
     # Logging
     LOG_LEVEL: str = "INFO"
+
+    # Server
+    PORT: int = 8035
 
 
 settings = Settings()
